@@ -1,4 +1,4 @@
-name: Build Installers
+name: Build and Release
 
 on:
   push:
@@ -8,11 +8,17 @@ on:
 
 jobs:
   build:
-    name: Build on ${{ matrix.os }}
+    name: Build for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            artifact_name: WhatsAppDispatcher.exe
+          - os: macos-latest
+            artifact_name: WhatsAppDispatcher.dmg
+          - os: ubuntu-latest
+            artifact_name: whatsapp-dispatcher-linux.tar.gz
 
     steps:
     - uses: actions/checkout@v4
@@ -25,32 +31,32 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        python -m pip install -r requirements.txt
         
-    - name: Build with PyInstaller (Windows)
+    - name: Build Windows Executable
       if: matrix.os == 'windows-latest'
       run: |
-        pyinstaller --onefile --windowed --name WhatsAppDispatcher --add-data ".env.example;." main.py
+        python -m PyInstaller --onefile --windowed --name WhatsAppDispatcher --add-data ".env.example;." main.py
         
-    - name: Build with PyInstaller (macOS)
+    - name: Build macOS DMG
       if: matrix.os == 'macos-latest'
       run: |
-        pyinstaller --onefile --windowed --name WhatsAppDispatcher --add-data ".env.example:." main.py
-        # Create DMG (simplified version for CI)
+        python -m PyInstaller --onefile --windowed --name WhatsAppDispatcher --add-data ".env.example:." main.py
         mkdir dist/dmg
         cp -r dist/WhatsAppDispatcher.app dist/dmg/
         hdiutil create -volname "WhatsApp Dispatcher" -srcfolder dist/dmg -ov -format UDZO dist/WhatsAppDispatcher.dmg
 
-    - name: Build with PyInstaller (Linux)
+    - name: Build Linux Tarball
       if: matrix.os == 'ubuntu-latest'
       run: |
-        pyinstaller --onefile --name WhatsAppDispatcher --add-data ".env.example:." main.py
-        tar -czvf dist/whatsapp-dispatcher-linux.tar.gz -C dist WhatsAppDispatcher
+        chmod +x build_linux.sh
+        ./build_linux.sh
+        mv whatsapp-dispatcher-linux.tar.gz dist/
         
-    - name: Upload Artifacts
+    - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: WhatsAppDispatcher-${{ matrix.os }}
+        name: ${{ matrix.artifact_name }}
         path: |
           dist/*.exe
           dist/*.dmg
