@@ -12,35 +12,41 @@ A cross-platform application that monitors a folder for new documents and images
    python3 -m pip install --upgrade pip
    python3 -m pip install -r requirements.txt
    ```
-3. **Configure**: Copy `.env.example` to `.env` and fill in your Twilio credentials.
+3. **Configure**: Create a file named `.env` in the root folder (see the **Configuration** section below).
 4. **Run**:
    ```bash
-   python3 main.py --folder ./inbox
+   python3 main.py
    ```
 
 ---
 
 ## ⚙️ Configuration
 
-The application can be configured in two ways:
+The application is primarily configured using a file named `.env`. 
 
-### 1. Command Line (Recommended)
-You can specify the folder to watch directly when starting the application using the `--folder` flag:
+### 1. Populate the `.env` file
+Copy `.env.example` to a new file named `.env` and fill in your details:
+
+**Windows (PowerShell):**
+```powershell
+cp .env.example .env
+```
+
+**macOS / Linux:**
 ```bash
-python3 main.py --folder "C:\Users\Documents\ScanInbox"
+cp .env.example .env
 ```
 
-### 2. Environment Variables (.env file)
-Open the `.env` file in your application folder and edit the following settings:
-- **`WATCH_FOLDER`**: The full path to the folder you want to monitor.
-- **`MEDIA_BASE_URL`**: (Optional) The public URL where you host your files.
-- **`TWILIO_...`**: Your Twilio API credentials.
+### 2. Required Settings
+Open the `.env` file in any text editor and update these fields:
 
-Example `.env`:
-```text
-WATCH_FOLDER=./my_scan_folder
-MEDIA_BASE_URL=https://my-bucket.s3.amazonaws.com/files/
-```
+| Variable | Description | Example |
+| :--- | :--- | :--- |
+| **`WATCH_FOLDER`** | The folder to scan for new files. | `C:\Users\ScanInbox` or `./inbox` |
+| **`TWILIO_ACCOUNT_SID`** | Your Twilio Account SID. | `ACxxxxxxxxxxxxxxxxxxxx` |
+| **`TWILIO_AUTH_TOKEN`** | Your Twilio Auth Token. | `yyyyyyyyyyyyyyyyyyyyyyyy` |
+| **`TWILIO_FROM_NUMBER`** | Your Twilio WhatsApp number. | `+14155238886` |
+| **`MEDIA_BASE_URL`** | (Optional) Public URL for file hosting. | `https://my-bucket.s3.amazonaws.com/` |
 
 ---
 
@@ -49,26 +55,25 @@ MEDIA_BASE_URL=https://my-bucket.s3.amazonaws.com/files/
 ### 🧪 Testing with a Personal Account
 To test the application without a business account, use the **Twilio WhatsApp Sandbox**:
 1. Create a free account at [Twilio](https://www.twilio.com).
-2. Go to the **Messaging > Try it out > Send a WhatsApp message** section in the Twilio Console.
-3. Follow the instructions to join the sandbox (e.g., send `join <your-keyword>` to the provided sandbox number from your personal WhatsApp).
-4. Use the `Account SID`, `Auth Token`, and the `Sandbox Number` in your `.env` file.
+2. Go to **Messaging > Try it out > Send a WhatsApp message** in the Twilio Console.
+3. Send `join <your-keyword>` to the provided sandbox number from your personal WhatsApp.
+4. Use the Sandbox credentials in your `.env`.
 
 ### 🏢 Corporate / Production Setting
 For corporate deployment, you **must** use the official **WhatsApp Business API**:
-- **Requirement**: You need a **WhatsApp Business Account (WABA)** verified through Facebook Business Manager.
-- **Message Templates**: Production WhatsApp messages require pre-approved templates. You must create a template for "document delivery" in the Twilio console.
+- **Requirement**: A **WhatsApp Business Account (WABA)** verified via Facebook Business Manager.
+- **Message Templates**: Production messages require pre-approved templates (approved in the Twilio console).
 
 ---
 
 ## 🪟 Windows Instructions
 
 ### Installation
-- Use **PowerShell** as Administrator.
 - Install Python 3.12+ from [python.org](https://www.python.org/).
 - Run: `python -m pip install -r requirements.txt`
 
 ### Building Standalone Setup (.exe)
-Run `build_windows.bat` to generate a standalone executable in the `dist/` directory.
+Run `build_windows.bat`. This uses `PyInstaller` to bundle the app and your configuration template.
 
 ---
 
@@ -79,7 +84,7 @@ Run `build_windows.bat` to generate a standalone executable in the `dist/` direc
 
 ### Building Standalone DMG
 1. Install `create-dmg`: `brew install create-dmg`
-2. Run `build_mac.sh`. This will generate `WhatsAppDispatcher.dmg` in the root folder.
+2. Run `build_mac.sh`. This generates `WhatsAppDispatcher.dmg`.
 
 ---
 
