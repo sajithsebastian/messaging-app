@@ -20,6 +20,30 @@ A cross-platform application that monitors a folder for new documents and images
 
 ---
 
+## ⚙️ Configuration
+
+The application can be configured in two ways:
+
+### 1. Command Line (Recommended)
+You can specify the folder to watch directly when starting the application using the `--folder` flag:
+```bash
+python3 main.py --folder "C:\Users\Documents\ScanInbox"
+```
+
+### 2. Environment Variables (.env file)
+Open the `.env` file in your application folder and edit the following settings:
+- **`WATCH_FOLDER`**: The full path to the folder you want to monitor.
+- **`MEDIA_BASE_URL`**: (Optional) The public URL where you host your files.
+- **`TWILIO_...`**: Your Twilio API credentials.
+
+Example `.env`:
+```text
+WATCH_FOLDER=./my_scan_folder
+MEDIA_BASE_URL=https://my-bucket.s3.amazonaws.com/files/
+```
+
+---
+
 ## 📱 WhatsApp Setup & Corporate Use
 
 ### 🧪 Testing with a Personal Account
@@ -28,17 +52,11 @@ To test the application without a business account, use the **Twilio WhatsApp Sa
 2. Go to the **Messaging > Try it out > Send a WhatsApp message** section in the Twilio Console.
 3. Follow the instructions to join the sandbox (e.g., send `join <your-keyword>` to the provided sandbox number from your personal WhatsApp).
 4. Use the `Account SID`, `Auth Token`, and the `Sandbox Number` in your `.env` file.
-5. You can now send files to any personal account that has joined your sandbox.
 
 ### 🏢 Corporate / Production Setting
-For a professional corporate deployment, you **must** use the official **WhatsApp Business API**.
-- **Requirement**: You need a **WhatsApp Business Account (WABA)**.
-- **Verification**: Your company must have a verified **Facebook Business Manager**.
-- **Process**:
-  1. Request access to the WhatsApp Business API via Twilio.
-  2. Register your business phone number.
-  3. Submit "Message Templates" for approval (WhatsApp requires templates for business-initiated messages).
-  4. Once approved, replace your Sandbox credentials in `.env` with your production API credentials and your registered business number.
+For corporate deployment, you **must** use the official **WhatsApp Business API**:
+- **Requirement**: You need a **WhatsApp Business Account (WABA)** verified through Facebook Business Manager.
+- **Message Templates**: Production WhatsApp messages require pre-approved templates. You must create a template for "document delivery" in the Twilio console.
 
 ---
 
@@ -47,10 +65,7 @@ For a professional corporate deployment, you **must** use the official **WhatsAp
 ### Installation
 - Use **PowerShell** as Administrator.
 - Install Python 3.12+ from [python.org](https://www.python.org/).
-- Run:
-  ```powershell
-  python -m pip install -r requirements.txt
-  ```
+- Run: `python -m pip install -r requirements.txt`
 
 ### Building Standalone Setup (.exe)
 Run `build_windows.bat` to generate a standalone executable in the `dist/` directory.
@@ -60,44 +75,25 @@ Run `build_windows.bat` to generate a standalone executable in the `dist/` direc
 ## 🍎 macOS Instructions
 
 ### Installation
-- Ensure you use `python3` and `pip3` to avoid "command not found" errors.
-- Run:
-  ```bash
-  python3 -m pip install -r requirements.txt
-  ```
+- Run: `python3 -m pip install -r requirements.txt`
 
 ### Building Standalone DMG
 1. Install `create-dmg`: `brew install create-dmg`
-2. Run the build command:
-   ```bash
-   python3 -m PyInstaller --onefile --windowed --name WhatsAppDispatcher --add-data ".env.example:." main.py
-   create-dmg --volname "WhatsApp Dispatcher" "WhatsAppDispatcher.dmg" ./dist/
-   ```
+2. Run `build_mac.sh`. This will generate `WhatsAppDispatcher.dmg` in the root folder.
 
 ---
 
 ## 🐧 Linux Instructions
 
 ### Installation
-1. Install system dependencies:
-   ```bash
-   sudo apt update && sudo apt install python3 python3-pip
-   ```
-2. Run:
-   ```bash
-   python3 -m pip install -r requirements.txt
-   ```
-
-### Creating Tarball
-Run `build_linux.sh` to package the app into a portable `.tar.gz` file.
+1. Install dependencies: `sudo apt update && sudo apt install python3 python3-pip`
+2. Run: `python3 -m pip install -r requirements.txt`
 
 ---
 
-## 🛠️ Requirements & Setup
-- **Public URL**: Twilio requires a public URL to send files. Configure `MEDIA_BASE_URL` in `.env` to point to your publicly hosted files (e.g., S3 bucket).
-- **OCR**: The application will download OCR models (~100MB) on the first run.
+## 🛠️ Common Requirements
+- **Public URL**: Twilio requires a public URL to send actual files.
+- **OCR**: The app downloads models (~100MB) on the first run.
 
 ## 🧪 Testing
-```bash
-python3 -m pytest tests/
-```
+`python3 -m pytest tests/`
