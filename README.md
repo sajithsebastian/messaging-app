@@ -6,100 +6,64 @@ A cross-platform application that monitors a folder for new documents and images
 
 ## 🪟 Windows Instructions
 
-### Installation
-1. **Install Python**: Download and install Python 3.12+ from [python.org](https://www.python.org/). Ensure "Add Python to PATH" is checked.
-2. **Clone/Download**: Extract the source code to a folder (e.g., `C:\WhatsAppDispatcher\`).
-3. **Install Dependencies**:
-   Open PowerShell or CMD in the folder and run:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. **Configuration**:
-   Copy `.env.example` to `.env` and enter your Twilio credentials.
+### Installation (Ready-to-run)
+1. **Download the Installer**: Run the `build_windows.bat` script on a Windows machine to generate a standalone `WhatsAppDispatcher.exe`.
+2. **Setup**:
+   - Create a folder `inbox` in the same directory as the `.exe`.
+   - Configure your `.env` file with Twilio credentials.
 
-### Usage
-- **Run as Script**:
-  ```bash
-  python main.py --folder ./inbox
-  ```
-- **Create Installer (.exe)**:
-  ```bash
-  pyinstaller --onefile --windowed --name WhatsAppDispatcher --add-data ".env.example;." main.py
-  ```
-  The executable will be in the `dist/` folder.
+### Building a Standalone EXE
+Run this in your terminal:
+```powershell
+pip install -r requirements.txt
+pyinstaller --onefile --windowed --name WhatsAppDispatcher --add-data ".env.example;." main.py
+```
 
 ---
 
 ## 🍎 macOS Instructions
 
 ### Installation
-1. **Install Python**: We recommend using [Homebrew](https://brew.sh/):
-   ```bash
-   brew install python
-   ```
-2. **Install Dependencies**:
+1. **Prerequisites**: Ensure Python 3.12+ is installed.
+2. **Setup**:
    ```bash
    pip3 install -r requirements.txt
-   ```
-3. **Configuration**:
-   ```bash
    cp .env.example .env
    ```
-   Edit `.env` with your Twilio Account SID, Auth Token, and Numbers.
 
-### Usage
-- **Run as Script**:
-  ```bash
-  python3 main.py --folder ./inbox
-  ```
-- **Create Installer (.app)**:
-  ```bash
-  pyinstaller --onefile --windowed --name WhatsAppDispatcher --add-data ".env.example:." main.py
-  ```
-  The app bundle will be in the `dist/` folder.
+### Building a DMG (Self-Sufficient)
+To create a macOS Disk Image (.dmg):
+1. Install `create-dmg`: `brew install create-dmg`
+2. Run the build command:
+   ```bash
+   pyinstaller --onefile --windowed --name WhatsAppDispatcher --add-data ".env.example:." main.py
+   create-dmg --volname "WhatsApp Dispatcher" --window-pos 200 120 --window-size 800 400 --icon-size 100 --icon "WhatsAppDispatcher.app" 200 190 --hide-extension "WhatsAppDispatcher.app" "WhatsAppDispatcher.dmg" ./dist/
+   ```
 
 ---
 
 ## 🐧 Linux Instructions
 
-### Installation
-1. **Install Python and Dependencies**:
-   On Ubuntu/Debian:
+### Installation (Tarball)
+1. **Create Tarball**:
    ```bash
-   sudo apt update
-   sudo apt install python3 python3-pip python3-venv
+   tar -czvf whatsapp-dispatcher-linux.tar.gz main.py extractor.py sender.py watcher.py requirements.txt .env.example
    ```
-2. **Setup Virtual Environment (Recommended)**:
+2. **Deploy**: Extract and run:
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
+   tar -xzvf whatsapp-dispatcher-linux.tar.gz
+   pip3 install -r requirements.txt
+   python3 main.py --folder ./inbox
    ```
-3. **Configuration**:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your credentials
-   ```
-
-### Usage
-- **Run the app**:
-  ```bash
-  python3 main.py --folder /path/to/watch
-  ```
-- **Run in Background**:
-  ```bash
-  python3 main.py --folder ./inbox &
-  ```
 
 ---
 
 ## 🛠️ Common Requirements
-- **Twilio Account**: You need a Twilio account with the WhatsApp Sandbox (or a production number) enabled.
-- **Public Media URL**: For Twilio to send the actual file, the file must be hosted on a public URL (e.g., AWS S3, Google Cloud Storage). Configure `MEDIA_BASE_URL` in your `.env` to point to your public upload directory.
-- **OCR Models**: On the first run, the app will download approximately 100MB of OCR models for number detection in images.
+- **Twilio Account**: Required for WhatsApp API access.
+- **Public Media URL**: Twilio requires files to be hosted on a public URL. Configure `MEDIA_BASE_URL` in `.env`.
+- **OCR Models**: Downloaded automatically on first run (~100MB).
 
 ## 🧪 Testing
-Run the test suite to verify your setup:
 ```bash
 export PYTHONPATH=$PYTHONPATH:.
 pytest tests/
