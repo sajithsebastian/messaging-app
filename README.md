@@ -20,6 +20,28 @@ A cross-platform application that monitors a folder for new documents and images
 
 ---
 
+## 📱 WhatsApp Setup & Corporate Use
+
+### 🧪 Testing with a Personal Account
+To test the application without a business account, use the **Twilio WhatsApp Sandbox**:
+1. Create a free account at [Twilio](https://www.twilio.com).
+2. Go to the **Messaging > Try it out > Send a WhatsApp message** section in the Twilio Console.
+3. Follow the instructions to join the sandbox (e.g., send `join <your-keyword>` to the provided sandbox number from your personal WhatsApp).
+4. Use the `Account SID`, `Auth Token`, and the `Sandbox Number` in your `.env` file.
+5. You can now send files to any personal account that has joined your sandbox.
+
+### 🏢 Corporate / Production Setting
+For a professional corporate deployment, you **must** use the official **WhatsApp Business API**.
+- **Requirement**: You need a **WhatsApp Business Account (WABA)**.
+- **Verification**: Your company must have a verified **Facebook Business Manager**.
+- **Process**:
+  1. Request access to the WhatsApp Business API via Twilio.
+  2. Register your business phone number.
+  3. Submit "Message Templates" for approval (WhatsApp requires templates for business-initiated messages).
+  4. Once approved, replace your Sandbox credentials in `.env` with your production API credentials and your registered business number.
+
+---
+
 ## 🪟 Windows Instructions
 
 ### Installation
@@ -31,9 +53,7 @@ A cross-platform application that monitors a folder for new documents and images
   ```
 
 ### Building Standalone Setup (.exe)
-We have provided a automated build script. To create a self-sufficient installer:
-1. Run `build_windows.bat`.
-2. This will generate a standalone executable in the `dist/` directory.
+Run `build_windows.bat` to generate a standalone executable in the `dist/` directory.
 
 ---
 
@@ -74,8 +94,7 @@ Run `build_linux.sh` to package the app into a portable `.tar.gz` file.
 ---
 
 ## 🛠️ Requirements & Setup
-- **Twilio**: Create an account at [twilio.com](https://www.twilio.com).
-- **Public URL**: Twilio requires a public URL to send files. Configure `MEDIA_BASE_URL` in `.env` to point to your publicly hosted files.
+- **Public URL**: Twilio requires a public URL to send files. Configure `MEDIA_BASE_URL` in `.env` to point to your publicly hosted files (e.g., S3 bucket).
 - **OCR**: The application will download OCR models (~100MB) on the first run.
 
 ## 🧪 Testing
